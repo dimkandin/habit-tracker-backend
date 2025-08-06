@@ -193,11 +193,12 @@ const createTables = async () => {
       CREATE TABLE IF NOT EXISTS habit_completions (
         id SERIAL PRIMARY KEY,
         habit_id INTEGER REFERENCES habits(id) ON DELETE CASCADE,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
         date DATE NOT NULL,
         completed BOOLEAN DEFAULT false,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(habit_id, date)
+        UNIQUE(habit_id, user_id, date)
       )
     `);
 
@@ -206,11 +207,12 @@ const createTables = async () => {
       CREATE TABLE IF NOT EXISTS habit_values (
         id SERIAL PRIMARY KEY,
         habit_id INTEGER REFERENCES habits(id) ON DELETE CASCADE,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
         date DATE NOT NULL,
         value NUMERIC NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(habit_id, date)
+        UNIQUE(habit_id, user_id, date)
       )
     `);
 
@@ -219,11 +221,12 @@ const createTables = async () => {
       CREATE TABLE IF NOT EXISTS habit_moods (
         id SERIAL PRIMARY KEY,
         habit_id INTEGER REFERENCES habits(id) ON DELETE CASCADE,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
         date DATE NOT NULL,
         mood_value INTEGER NOT NULL CHECK (mood_value >= 1 AND mood_value <= 5),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(habit_id, date)
+        UNIQUE(habit_id, user_id, date)
       )
     `);
 

@@ -309,7 +309,7 @@ router.post('/:id/mood', authenticateToken, async (req, res) => {
     if (process.env.NODE_ENV === 'production') {
       // Production: используем PostgreSQL
       const result = await pool.query(
-        'INSERT INTO habit_moods (habit_id, user_id, date, mood) VALUES ($1, $2, $3, $4) ON CONFLICT (habit_id, user_id, date) DO UPDATE SET mood = $4 RETURNING *',
+        'INSERT INTO habit_moods (habit_id, user_id, date, mood_value) VALUES ($1, $2, $3, $4) ON CONFLICT (habit_id, user_id, date) DO UPDATE SET mood_value = $4 RETURNING *',
         [id, req.user.id, date, mood]
       );
       res.json(result.rows[0]);

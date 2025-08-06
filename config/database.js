@@ -188,9 +188,14 @@ const createTables = async () => {
       )
     `);
 
+    // Удаляем старые таблицы если есть (для обновления схемы)
+    await client.query('DROP TABLE IF EXISTS habit_completions CASCADE');
+    await client.query('DROP TABLE IF EXISTS habit_values CASCADE');  
+    await client.query('DROP TABLE IF EXISTS habit_moods CASCADE');
+
     // Создание таблицы выполнения бинарных привычек
     await client.query(`
-      CREATE TABLE IF NOT EXISTS habit_completions (
+      CREATE TABLE habit_completions (
         id SERIAL PRIMARY KEY,
         habit_id INTEGER REFERENCES habits(id) ON DELETE CASCADE,
         user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -204,7 +209,7 @@ const createTables = async () => {
 
     // Создание таблицы количественных значений
     await client.query(`
-      CREATE TABLE IF NOT EXISTS habit_values (
+      CREATE TABLE habit_values (
         id SERIAL PRIMARY KEY,
         habit_id INTEGER REFERENCES habits(id) ON DELETE CASCADE,
         user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -218,7 +223,7 @@ const createTables = async () => {
 
     // Создание таблицы настроений
     await client.query(`
-      CREATE TABLE IF NOT EXISTS habit_moods (
+      CREATE TABLE habit_moods (
         id SERIAL PRIMARY KEY,
         habit_id INTEGER REFERENCES habits(id) ON DELETE CASCADE,
         user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,

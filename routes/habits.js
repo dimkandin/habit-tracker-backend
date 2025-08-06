@@ -40,6 +40,7 @@ router.get('/', authenticateToken, async (req, res) => {
         });
       };
       const habits = await getHabits();
+      db.close();
       res.json(habits);
     }
   } catch (error) {

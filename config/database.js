@@ -112,17 +112,35 @@ const createSQLiteTables = (db) => {
 };
 
 // PostgreSQL пул для облачной синхронизации
-const pool = new Pool({
-  host: process.env.PGHOST || process.env.DB_HOST,
-  port: process.env.PGPORT || process.env.DB_PORT || 5432,
-  database: process.env.PGDATABASE || process.env.DB_NAME,
-  user: process.env.PGUSER || process.env.DB_USER,
-  password: process.env.PGPASSWORD || process.env.DB_PASSWORD,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
-});
+let poolConfig;
+
+if (process.env.DATABASE_URL) {
+  // Используем DATABASE_URL (приоритет для Railway)
+  poolConfig = {
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+    max: 20,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
+  };
+  console.log('🔗 Используем DATABASE_URL для подключения к PostgreSQL');
+} else {
+  // Используем отдельные переменные (fallback)
+  poolConfig = {
+    host: process.env.PGHOST || process.env.DB_HOST,
+    port: process.env.PGPORT || process.env.DB_PORT || 5432,
+    database: process.env.PGDATABASE || process.env.DB_NAME,
+    user: process.env.PGUSER || process.env.DB_USER,
+    password: process.env.PGPASSWORD || process.env.DB_PASSWORD,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+    max: 20,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
+  };
+  console.log('🔗 Используем отдельные переменные для подключения к PostgreSQL');
+}
+
+const pool = new Pool(poolConfig);
 
 // Функция для тестирования подключения к PostgreSQL
 const connectDB = async () => {

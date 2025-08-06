@@ -37,7 +37,8 @@ app.get('/api/health', (req, res) => {
     environment: process.env.NODE_ENV || 'development',
     database: {
       sqlite: isProduction ? 'disabled' : 'available',
-      postgresql: (process.env.PGHOST || process.env.DB_HOST) ? 'configured' : 'not configured'
+      postgresql: (process.env.DATABASE_URL || process.env.PGHOST || process.env.DB_HOST) ? 'configured' : 'not configured',
+      connection_type: process.env.DATABASE_URL ? 'DATABASE_URL' : 'separate_variables'
     },
     platform: 'Railway',
     version: '1.0.0',

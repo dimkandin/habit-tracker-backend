@@ -93,7 +93,11 @@ router.post('/', authenticateToken, async (req, res) => {
     }
   } catch (error) {
     console.error('Ошибка создания привычки:', error);
-    res.status(500).json({ error: 'Ошибка создания привычки' });
+    console.error('Stack trace:', error.stack);
+    res.status(500).json({ 
+      error: 'Ошибка создания привычки',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 

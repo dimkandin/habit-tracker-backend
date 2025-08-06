@@ -349,4 +349,109 @@ router.post('/:id/mood', authenticateToken, async (req, res) => {
   }
 });
 
+// Получить все выполнения привычек пользователя
+router.get('/completions', authenticateToken, async (req, res) => {
+  try {
+    if (process.env.NODE_ENV === 'production') {
+      // Production: используем PostgreSQL
+      const result = await pool.query(
+        'SELECT * FROM habit_completions WHERE user_id = $1 ORDER BY date DESC',
+        [req.user.id]
+      );
+      res.json(result.rows);
+    } else {
+      // Development: используем SQLite
+      const db = new sqlite3.Database(sqlitePath);
+      const getCompletions = () => {
+        return new Promise((resolve, reject) => {
+          db.all(
+            'SELECT * FROM habit_completions WHERE user_id = ? ORDER BY date DESC',
+            [req.user.id],
+            (err, rows) => {
+              if (err) reject(err);
+              else resolve(rows);
+            }
+          );
+        });
+      };
+      const completions = await getCompletions();
+      db.close();
+      res.json(completions);
+    }
+  } catch (error) {
+    console.error('Ошибка получения выполнений:', error);
+    res.status(500).json({ error: 'Ошибка получения выполнений' });
+  }
+});
+
+// Получить все значения привычек пользователя
+router.get('/values', authenticateToken, async (req, res) => {
+  try {
+    if (process.env.NODE_ENV === 'production') {
+      // Production: используем PostgreSQL
+      const result = await pool.query(
+        'SELECT * FROM habit_values WHERE user_id = $1 ORDER BY date DESC',
+        [req.user.id]
+      );
+      res.json(result.rows);
+    } else {
+      // Development: используем SQLite
+      const db = new sqlite3.Database(sqlitePath);
+      const getValues = () => {
+        return new Promise((resolve, reject) => {
+          db.all(
+            'SELECT * FROM habit_values WHERE user_id = ? ORDER BY date DESC',
+            [req.user.id],
+            (err, rows) => {
+              if (err) reject(err);
+              else resolve(rows);
+            }
+          );
+        });
+      };
+      const values = await getValues();
+      db.close();
+      res.json(values);
+    }
+  } catch (error) {
+    console.error('Ошибка получения значений:', error);
+    res.status(500).json({ error: 'Ошибка получения значений' });
+  }
+});
+
+// Получить все настроения пользователя
+router.get('/moods', authenticateToken, async (req, res) => {
+  try {
+    if (process.env.NODE_ENV === 'production') {
+      // Production: используем PostgreSQL
+      const result = await pool.query(
+        'SELECT * FROM habit_moods WHERE user_id = $1 ORDER BY date DESC',
+        [req.user.id]
+      );
+      res.json(result.rows);
+    } else {
+      // Development: используем SQLite
+      const db = new sqlite3.Database(sqlitePath);
+      const getMoods = () => {
+        return new Promise((resolve, reject) => {
+          db.all(
+            'SELECT * FROM habit_moods WHERE user_id = ? ORDER BY date DESC',
+            [req.user.id],
+            (err, rows) => {
+              if (err) reject(err);
+              else resolve(rows);
+            }
+          );
+        });
+      };
+      const moods = await getMoods();
+      db.close();
+      res.json(moods);
+    }
+  } catch (error) {
+    console.error('Ошибка получения настроений:', error);
+    res.status(500).json({ error: 'Ошибка получения настроений' });
+  }
+});
+
 module.exports = router; 
